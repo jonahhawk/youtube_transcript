@@ -14,7 +14,7 @@ import re
 import time
 from colorama import Fore, Style
 
-now = time.time()
+start_time = time.time()
 # get the data with a Loader
 url = "https://www.youtube.com/watch?v=2xNzB7xq8nk&ab_channel=DavidShapiro~AI"
 loader = YoutubeLoader.from_youtube_url(url)
@@ -31,12 +31,12 @@ db = FAISS.from_documents(chunks, embeddings)
 # create a query to search for similar chunks
 human_query = "What does the speaker say about Pinecone?"
 similar_chunks = db.similarity_search(human_query, k=4)
+db_creation_time = time.time()
 
 # print the content of the similar chunks
 for chunk in similar_chunks:
     print(Fore.GREEN + f"Similar chunk: {chunk.page_content}" + Style.RESET_ALL)
-    print("\n")
-
+print("Sending query to OpenAI API...")
 # get the content of the similar chunks and join them into a single string
 chunks_page_content = " ".join([d.page_content for d in similar_chunks])
 
@@ -65,7 +65,6 @@ chat_prompt = ChatPromptTemplate.from_messages(
 # create a chain with the chat model and the chat prompt
 chain = LLMChain(llm=chat, prompt=chat_prompt)
 pre_response = time.time()
-print(Fore.YELLOW + f"\nEmbedding and db creation time: {format((pre_response - now), '.2f')}" + Style.RESET_ALL)
 
 # run the chain to generate a response from the OpenAI API
 response = chain.run(content=chunks_page_content, question=human_query)
@@ -74,6 +73,10 @@ post_response = time.time()
 # remove newlines from the response
 response = re.sub(r"\n", " ", response)
 
+# print the query, response and report some timing information
+print(Fore.RED + human_query + Style.RESET_ALL)
 print(Fore.MAGENTA + response + Style.RESET_ALL)
-print(Fore.YELLOW + f"Response time:{format((post_response - pre_response), '.2f')}")
-print(f"Total time: {format((post_response - now), '.2f')}" + Style.RESET_ALL)
+print(Fore.CYAN + f"Embedding, db creation time: {format((db_creation_time - start_time), '.2f')}" + Style.RESET_ALL)
+print(Fore.CYAN + f"Semantic search time: {format((pre_response - db_creation_time), '.8f')}" + Style.RESET_ALL)
+print(Fore.CYAN + f"Response time to/from OpenAI API:{format((post_response - pre_response), '.2f')}")
+print(f"Total time: {format((post_response - start_time), '.2f')}" + Style.RESET_ALL)

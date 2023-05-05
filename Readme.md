@@ -1,4 +1,4 @@
-Install python 3.8
+Install python 3.8 up to 3.10
 Start a new project in an empty folder
 Create a new virtual environment using python 3.8 or greater.
 

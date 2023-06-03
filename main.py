@@ -20,6 +20,8 @@ url = "https://www.youtube.com/watch?v=2xNzB7xq8nk&ab_channel=DavidShapiro~AI"
 loader = YoutubeLoader.from_youtube_url(url)
 transcript = loader.load()
 
+
+
 # split the transcript into chunks with a Splitter
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
 chunks = text_splitter.split_documents(transcript)

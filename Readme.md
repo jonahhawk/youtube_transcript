@@ -17,4 +17,3 @@ Create a new virtual environment using python 3.8 or greater.
     - In Credentials tab, Create Credentials
     - Choose Public Data, press Next
     - Copy the API key and save it somewhere
-
